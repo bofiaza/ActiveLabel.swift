@@ -51,6 +51,9 @@ typealias ElementTuple = (range: NSRange, element: ActiveElement, type: ActiveTy
     open var customSelectedColor: [ActiveType : UIColor] = [:] {
         didSet { updateTextStorage(parseText: false) }
     }
+    open var customFont: [ActiveType : UIFont] = [:] {
+        didSet { updateTextStorage(parseText: false) }
+    }
     @IBInspectable public var lineSpacing: CGFloat = 0 {
         didSet { updateTextStorage(parseText: false) }
     }
@@ -321,8 +324,16 @@ typealias ElementTuple = (range: NSRange, element: ActiveElement, type: ActiveTy
             case .custom: attributes[NSForegroundColorAttributeName] = customColor[type] ?? defaultCustomColor
             }
             
-            if let highlightFont = hightlightFont {
-                attributes[NSFontAttributeName] = highlightFont
+            if type == .mention || type == .hashtag || type == .url {
+                if let highlightFont = hightlightFont {
+                    attributes[NSFontAttributeName] = highlightFont
+                }
+            } else {
+                if let font = customFont[type] {
+                    attributes[NSFontAttributeName] = font
+                } else if let font = hightlightFont {
+                    attributes[NSFontAttributeName] = font
+                }
             }
 			
             if let configureLinkAttribute = configureLinkAttribute {
